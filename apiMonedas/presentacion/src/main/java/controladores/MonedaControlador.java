@@ -60,7 +60,7 @@ public class MonedaControlador {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/pais/{nombre}")
+    @GetMapping("/buscarporpais/{nombre}")
     public ResponseEntity<Moneda> buscarPorPais(@PathVariable String nombre) {
         Moneda moneda = servicio.buscarPorPais(nombre);
         if (moneda == null) {
@@ -93,7 +93,7 @@ public class MonedaControlador {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/cambiosporperiodo")
+    @GetMapping("/listarporperiodo")
     public ResponseEntity<List<Cambio>> listarPorPeriodo(@RequestBody PeriodoDto periodo) {
         List<Cambio> lista = servicio.listarPorPeriodo(
                 periodo.getIdMoneda(), 

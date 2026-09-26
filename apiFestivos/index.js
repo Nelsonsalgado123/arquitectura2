@@ -13,6 +13,7 @@ app.use(express.json());
 connectDB();
 
 // Rutas
+app.use(express.static('public')); // Servir la UI
 app.use('/api/festivos', festivoRoutes);
 
 // Iniciar Servidor

@@ -34,7 +34,7 @@ public class ConfiguracionSeguridad {
                 .cors(Customizer.withDefaults()) // Activa CORS
                 .authorizeHttpRequests(
                         (authz) -> authz
-                                .requestMatchers("/api/usuarios/login/**").permitAll()
+                                .requestMatchers("/api/usuarios/validar/**").permitAll()
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
@@ -42,6 +42,7 @@ public class ConfiguracionSeguridad {
                                         "/swagger-resources/**",
                                         "/webjars/**")
                                 .permitAll()
+                                .requestMatchers("/api/calendario/**").permitAll()
                                 // .requestMatchers("/api/monedas/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAfter(filtro, UsernamePasswordAuthenticationFilter.class)

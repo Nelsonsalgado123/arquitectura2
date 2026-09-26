@@ -24,7 +24,7 @@ public class UsuarioControlador {
     @Autowired
     private IUsuarioServicio servicio;
 
-    @GetMapping(value = "/login/{nombreUsuario}/{clave}")
+    @GetMapping(value = "/validar/{nombreUsuario}/{clave}")
     public UsuarioLoginDto login(@PathVariable String nombreUsuario, @PathVariable String clave) {
         return servicio.login(nombreUsuario, clave);
     }

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validador de Festivos Colombia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-light: #818CF8;
+            --background: #0f172a;
+            --surface: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --success: #10b981;
+            --error: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: var(--background);
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .glass-container {
+            background: var(--surface);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-align: center;
+            background: linear-gradient(to right, #818CF8, #C084FC);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #94a3b8;
+            margin-bottom: 30px;
+            font-size: 0.95rem;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #cbd5e1;
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input[type="date"]:focus {
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+
+        ::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        ::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+        }
+
+        button:hover {
+            opacity: 0.9;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            margin-top: 24px;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+        }
+
+        .result-card.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .is-festivo {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #34d399;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
+        }
+
+        .not-festivo {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--error);
+            color: #f87171;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.1);
+        }
+
+        .invalid-date {
+            background: rgba(245, 158, 11, 0.15);
+            border: 1px solid #f59e0b;
+            color: #fbbf24;
+        }
+
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glass-container">
+        <h1>API de Festivos</h1>
+        <p class="subtitle">Verifica si una fecha en Colombia es día festivo</p>
+
+        <div class="input-group">
+            <label for="fechaSeleccionada">Selecciona una fecha</label>
+            <input type="date" id="fechaSeleccionada" />
+        </div>
+
+        <button id="btnValidar">
+            <span id="btnText">Validar Fecha</span>
+            <div class="loader" id="loader"></div>
+        </button>
+
+        <div id="resultado" class="result-card"></div>
+    </div>
+
+    <script>
+        document.getElementById('btnValidar').addEventListener('click', async () => {
+            const fechaInput = document.getElementById('fechaSeleccionada').value;
+            const resultCard = document.getElementById('resultado');
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+
+            if (!fechaInput) {
+                mostrarResultado('Por favor selecciona una fecha válida', 'invalid-date');
+                return;
+            }
+
+            // Separar año, mes, día (para evitar problemas de zona horaria con JS Dates)
+            const [year, month, day] = fechaInput.split('-');
+
+            // UX: Loading state
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            resultCard.classList.remove('show');
+
+            try {
+                const response = await fetch(`/api/festivos/verificar/${year}/${month}/${day}`);
+                const dataText = await response.text();
+
+                if (dataText === 'Es Festivo') {
+                    mostrarResultado(`🎉 ¡Sí! El ${day}/${month}/${year} es Festivo.`, 'is-festivo');
+                } else if (dataText === 'No es festivo') {
+                    mostrarResultado(`📅 El ${day}/${month}/${year} NO es festivo.`, 'not-festivo');
+                } else {
+                    mostrarResultado(dataText, 'invalid-date');
+                }
+
+            } catch (error) {
+                mostrarResultado('Error al conectar con la API', 'invalid-date');
+            } finally {
+                // Restore button
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        });
+
+        function mostrarResultado(mensaje, clase) {
+            const resultCard = document.getElementById('resultado');
+            resultCard.className = `result-card ${clase}`;
+            resultCard.innerHTML = mensaje;
+            
+            // Trigger reflow for animation
+            void resultCard.offsetWidth;
+            resultCard.classList.add('show');
+        }
+    </script>
+</body>
+</html>
