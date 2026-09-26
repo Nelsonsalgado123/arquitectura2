@@ -1,0 +1,34 @@
+graph TD
+    subgraph CapaPresentacion [Capa de Presentación]
+        Controllers[Controladores REST]
+        Security[Seguridad JWT]
+    end
+
+    subgraph CapaAplicacion [Capa de Aplicación]
+        Services[Casos de Uso / Servicios]
+    end
+
+    subgraph CapaDominio [Capa de Dominio]
+        Entities[Entidades del Dominio]
+        Interfaces[Interfaces Repositorios]
+    end
+
+    subgraph CapaInfraestructura [Capa de Infraestructura]
+        JPARepos[Repositorios JPA]
+        JPAEntities[Entidades JPA]
+        ExternalAPI[Cliente Node.js API]
+    end
+
+    subgraph Persistencia [Base de Datos]
+        DB[(PostgreSQL)]
+    end
+
+    Cliente[Cliente HTTP] --> Security
+    Security --> Controllers
+    Controllers --> Services
+    Services --> Entities
+    Services --> Interfaces
+    JPARepos -. Implementa .-> Interfaces
+    JPARepos --> JPAEntities
+    JPAEntities --> DB
+    Controllers --> ExternalAPI

@@ -1,0 +1,23 @@
+graph TD
+    subgraph CapaPresentacion [Capa de Presentación]
+        Index[index.js / Servidor Express]
+        Routes[Rutas - festivo.routes.js]
+    end
+
+    subgraph CapaAplicacion [Capa de Aplicación]
+        Controllers[Controladores - festivo.controller.js]
+    end
+
+    subgraph CapaDominio [Capa de Dominio]
+        Models[Modelos - Festivo.js]
+    end
+
+    subgraph CapaInfraestructura [Capa de Persistencia]
+        DB[(Base de Datos - MongoDB)]
+    end
+
+    Cliente[Cliente HTTP] --> Index
+    Index --> Routes
+    Routes --> Controllers
+    Controllers --> Models
+    Models --> DB
