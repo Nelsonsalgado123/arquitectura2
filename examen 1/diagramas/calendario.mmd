@@ -1,0 +1,65 @@
+graph TD
+    %% Cliente / Capa de Presentación Externa
+    subgraph ClientLayer [Capa de Cliente]
+        Client[Cliente Web / Postman / Swagger UI]
+    end
+
+    %% Capa de Presentación (Spring Boot)
+    subgraph PresentationLayer [Capa de Presentación / API]
+        App["ApiApplication<br/><i>@SpringBootApplication</i>"]
+        Controller["CalendarioControlador - @RestController<br/><i>GET /api/calendario/generar/:year → boolean<br/>GET /api/calendario/listar/:year → lista de días</i>"]
+    end
+
+    %% Capa de Lógica de Negocio
+    subgraph BusinessLayer [Capa de Lógica de Negocio]
+        Generar[Generación del calendario<br/><i>Recorre los 365/366 días del año</i>]
+        Clasificar[Clasificación de días<br/><i>Día laboral / Fin de semana / Día festivo</i>]
+    end
+
+    %% Capa de Integración
+    subgraph IntegrationLayer [Capa de Integración]
+        Cliente[Cliente HTTP - RestTemplate<br/><i>FestivoDTO: festivo, fecha</i>]
+    end
+
+    %% Microservicio Externo
+    subgraph ExternalLayer [Microservicio Externo]
+        APIFestivos[API Festivos - Express + MongoDB<br/><i>GET /api/festivos/obtener/:year</i>]
+    end
+
+    %% Capa de Acceso a Datos
+    subgraph DataAccessLayer [Capa de Acceso a Datos - Spring Data JPA]
+        Repos[Repositorios<br/><i>ICalendarioRepositorioJpa / ITipoRepositorioJpa</i>]
+        Entities[Entidades JPA<br/><i>CalendarioEntidad / TipoEntidad</i>]
+    end
+
+    %% Capa de Persistencia
+    subgraph PersistenceLayer [Capa de Persistencia]
+        DB[(Base de Datos - PostgreSQL<br/><i>Tablas Tipo / Calendario</i>)]
+    end
+
+    %% Flujo de la Petición (Request) - Generar
+    App -.->|Inicia| Controller
+    Client -->|1. Petición HTTP| Controller
+    Controller -->|2. Generar año| Generar
+    Generar -->|3. Solicita festivos del año| Cliente
+    Cliente -->|4. HTTP GET| APIFestivos
+    Cliente <-.-|5. JSON lista de festivos| APIFestivos
+    Generar <-.-|6. Lista FestivoDTO| Cliente
+    Generar -->|7. Clasifica cada día| Clasificar
+    Clasificar -->|8. saveAll / findByYear| Repos
+    Repos -->|Usa| Entities
+    Repos -->|9. SQL INSERT / SELECT| DB
+
+    %% Flujo de la Respuesta (Response)
+    Repos <-.-|10. Retorna registros| DB
+    Controller <-.-|11. Resultado| Repos
+    Client <-.-|12. Respuesta JSON: true/false o calendario| Controller
+
+    %% Estilos de Nodos
+    style ClientLayer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style PresentationLayer fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style BusinessLayer fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style IntegrationLayer fill:#fffde7,stroke:#fbc02d,stroke-width:2px
+    style ExternalLayer fill:#eceff1,stroke:#455a64,stroke-width:2px,stroke-dasharray: 5 5
+    style DataAccessLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style PersistenceLayer fill:#ffebee,stroke:#d32f2f,stroke-width:2px

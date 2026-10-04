@@ -1,23 +1,53 @@
 graph TD
-    subgraph CapaPresentacion [Capa de Presentación]
-        Index[index.js / Servidor Express]
-        Routes[Rutas - festivo.routes.js]
+    %% Cliente / Capa de Presentación Externa
+    subgraph ClientLayer [Capa de Cliente]
+        Client[Cliente Web / Postman / API Calendario Spring Boot]
     end
 
-    subgraph CapaAplicacion [Capa de Aplicación]
-        Controllers[Controladores - festivo.controller.js]
+    %% Capa de Entrada y Enrutamiento
+    subgraph PresentationLayer [Capa de Presentación / API]
+        Index[index.js<br/><i>Servidor Express - puerto 3030</i>]
+        Middlewares[Middlewares<br/><i>cors, express.json</i>]
+        Routes[Rutas Express - festivo.routes.js<br/><i>GET /api/festivos/verificar/:year/:month/:day<br/>GET /api/festivos/obtener/:year<br/>POST /api/festivos/poblar</i>]
     end
 
-    subgraph CapaDominio [Capa de Dominio]
-        Models[Modelos - Festivo.js]
+    %% Capa de Lógica de Negocio
+    subgraph BusinessLayer [Capa de Lógica de Negocio]
+        Controllers[Controlador - festivo.controller.js<br/><i>verificarFestivo / obtenerFestivosPorAno / poblarBaseDatos</i>]
+        Validacion[Validación de fecha<br/><i>Fecha No válida</i>]
+        Reglas[Reglas de cálculo de festivos<br/><i>obtenerDomingoPascua / moverASiguienteLunes / calcularFechaFestivo</i>]
     end
 
-    subgraph CapaInfraestructura [Capa de Persistencia]
-        DB[(Base de Datos - MongoDB)]
+    %% Capa de Acceso a Datos
+    subgraph DataAccessLayer [Capa de Acceso a Datos]
+        Models[Modelo Mongoose - Festivo.js<br/><i>dia, mes, nombre, idTipo, diasPascua</i>]
+        Config[Conexión - config/db.js]
     end
 
-    Cliente[Cliente HTTP] --> Index
-    Index --> Routes
-    Routes --> Controllers
-    Controllers --> Models
-    Models --> DB
+    %% Capa de Persistencia
+    subgraph PersistenceLayer [Capa de Persistencia]
+        DB[(Base de Datos - MongoDB<br/><i>colección festivos</i>)]
+    end
+
+    %% Flujo de la Petición (Request)
+    Client -->|1. Petición HTTP| Index
+    Index -->|2. Aplica| Middlewares
+    Middlewares -->|3. Delega a| Routes
+    Routes -->|4. Invoca| Controllers
+    Controllers -->|5. Valida fecha| Validacion
+    Controllers -->|6. Solicita festivos| Models
+    Models -->|7. Consulta find| DB
+    Config -->|Conecta| DB
+
+    %% Flujo de la Respuesta (Response)
+    Models <-.-|8. Retorna documentos| DB
+    Controllers <-.-|9. Lista de festivos| Models
+    Controllers -->|10. Calcula fechas del año| Reglas
+    Client <-.-|11. Respuesta: Es Festivo / No es festivo / JSON| Controllers
+
+    %% Estilos de Nodos
+    style ClientLayer fill:#e1f5fe,stroke:#0288d1,stroke-width:2px
+    style PresentationLayer fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    style BusinessLayer fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
+    style DataAccessLayer fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px
+    style PersistenceLayer fill:#ffebee,stroke:#d32f2f,stroke-width:2px

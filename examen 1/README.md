@@ -1,39 +1,57 @@
-# Taller 1 - Integración de Sistemas
+# Taller 1 - Arquitectura de Software (Microservicios)
 
-Este repositorio contiene la solución completa al Taller 1.
+Este repositorio contiene la solución al Taller 1: dos APIs RESTful que conforman una solución basada en microservicios.
 
-## 🚀 Fases Completadas
+| # | API | Tecnología | Carpeta |
+|---|-----|------------|---------|
+| 1 | API Festivos | Express JS + MongoDB | `/apiFestivos` |
+| 2 | API Calendario (cliente de la API Festivos) | Spring Boot + PostgreSQL | `/apiMonedas` (módulo calendario) |
 
-1. **Fase 1:** API Festivos (Node.js, Express, MongoDB) - Ruta: `/apiFestivos`
-2. **Fase 2:** API Calendario (Spring Boot, PostgreSQL) - Ruta: `/apiMonedas` (Módulo Integrado)
-3. **Fase 3:** API Monedas y Seguridad JWT (Spring Boot, PostgreSQL) - Ruta: `/apiMonedas`
+### Endpoints
 
----
+**API Festivos** (`http://localhost:3030`)
+- `GET /api/festivos/verificar/{año}/{mes}/{día}` → *Es Festivo* / *No es festivo* / *Fecha No válida*
+- `GET /api/festivos/obtener/{año}` → lista de festivos del año
 
-## 📐 Fase 4: Diagramas de Arquitectura (Mermaid)
-
-A continuación, se presentan los diagramas de arquitectura de las soluciones desarrolladas:
-
-### 1. Diagrama de Arquitectura por Capas - API Festivos (Node.js)
-
-![Arquitectura Festivos Node.js](diagramas/festivos.png)
-
-### 2. Diagrama de Arquitectura por Capas - API Calendario y Monedas (Spring Boot)
-
-La solución en Java implementa una **Arquitectura Hexagonal (Limpia)** separada por módulos:
-
-![Arquitectura Monedas Spring Boot](diagramas/monedas.png)
+**API Calendario**
+- `GET /api/calendario/generar/{año}` → genera y almacena todos los días del año clasificados (retorna `true`/`false`)
+- `GET /api/calendario/listar/{año}` → retorna el calendario completo con los días clasificados
 
 ---
 
-## 💾 Fase Adicional: Modelado de Datos
+## 📐 Diagramas de Arquitectura (Mermaid)
 
-Para asegurar una entrega perfecta (como la de tus compañeros), también se incluyeron los diagramas de Base de Datos y de Clases:
+### 1. Diagrama de Arquitectura por Capas - API Festivos (Express + MongoDB)
 
-### 3. Diagrama Relacional (Base de Datos Monedas)
+![Arquitectura API Festivos](diagramas/festivos.png)
+
+Código fuente: [`diagramas/festivos.mmd`](diagramas/festivos.mmd)
+
+### 2. Diagrama de Arquitectura por Capas - API Calendario (Spring Boot + PostgreSQL)
+
+Muestra la comunicación entre microservicios: la API Calendario consume vía HTTP GET la API Festivos.
+
+![Arquitectura API Calendario](diagramas/calendario.png)
+
+Código fuente: [`diagramas/calendario.mmd`](diagramas/calendario.mmd)
+
+---
+
+## 💾 Modelado de Datos
+
+### 3. Diagrama Relacional - BD Calendario (PostgreSQL)
 
 ![Diagrama Relacional](diagramas/diagrama-relacional.png)
 
-### 4. Diagrama Objetual (Clases del Dominio)
+### 4. Diagrama Objetual - Clases de ambas APIs
 
 ![Diagrama de Clases](diagramas/diagrama-objetual.png)
+
+---
+
+## 📝 Correcciones respecto a la primera entrega
+
+- Se rehízo el diagrama de la API Festivos siguiendo el ejemplo de División Política (capa de cliente, flujo numerado de petición/respuesta, archivos y rutas reales, reglas de cálculo de Pascua y Ley de Puente).
+- Se agregó el diagrama de la **API Calendario**, que no se había entregado (antes se había diagramado la API Monedas, que era solo el ejemplo del enunciado).
+- Los diagramas relacional y objetual ahora corresponden a las APIs del taller (Festivos y Calendario) y no a Monedas.
+- La versión en Arquitectura Cebolla (Onion) de la API Calendario se encuentra en la carpeta `examen2`.

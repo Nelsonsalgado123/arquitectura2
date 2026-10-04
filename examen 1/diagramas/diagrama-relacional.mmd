@@ -1,42 +1,13 @@
 erDiagram
-    MONEDA {
-        int id PK
-        string moneda
-        string sigla
-        string simbolo
-        string emisor
-    }
-    PAIS {
-        int id PK
-        string nombre
-        string codigoAlfa2
-        string codigoAlfa3
-        int idMoneda FK
-    }
-    CAMBIO {
-        int id PK
-        int idMoneda FK
-        date fecha
-        float valor
-    }
     TIPO {
         int id PK
-        string tipo
+        string tipo "Día laboral / Fin de semana / Día festivo"
     }
     CALENDARIO {
         int id PK
-        date fecha
+        date fecha "Única por día"
         int idtipo FK
         string descripcion
     }
-    USUARIO {
-        int id PK
-        string usuario
-        string nombre
-        string clave
-        string roles
-    }
 
-    MONEDA ||--o{ PAIS : "tiene"
-    MONEDA ||--o{ CAMBIO : "registra"
     TIPO ||--o{ CALENDARIO : "clasifica"

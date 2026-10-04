@@ -1,51 +1,49 @@
 classDiagram
+    %% ===== API Festivos (MongoDB) =====
+    class Festivo {
+        <<Documento MongoDB>>
+        -ObjectId _id
+        -int dia
+        -int mes
+        -String nombre
+        -int idTipo
+        -int diasPascua
+    }
+
+    class TipoFestivo {
+        <<enumeration>>
+        1 Fijo
+        2 Ley de Puente festivo
+        3 Basado en domingo de Pascua
+        4 Pascua y Ley de Puente festivo
+    }
+
+    %% ===== API Calendario (PostgreSQL) =====
     class Tipo {
         -int id
         -String tipo
         +getId() int
         +getTipo() String
     }
-    
+
     class Calendario {
         -int id
         -Date fecha
-        -int idTipo
+        -Tipo tipo
         -String descripcion
         +getId() int
         +getFecha() Date
-    }
-    
-    class Moneda {
-        -int id
-        -String nombre
-        -String sigla
-        -String simbolo
-        -String emisor
-    }
-    
-    class Pais {
-        -int id
-        -String nombre
-        -String codigoAlfa2
-        -String codigoAlfa3
-        -Moneda moneda
-    }
-    
-    class Cambio {
-        -int id
-        -Moneda moneda
-        -Date fecha
-        -double valor
+        +getTipo() Tipo
+        +getDescripcion() String
     }
 
-    class Usuario {
-        -int id
-        -String usuario
-        -String nombre
-        -String clave
-        -String roles
+    class FestivoDto {
+        <<DTO - respuesta API Festivos>>
+        -String festivo
+        -String fecha
     }
 
-    Pais --> Moneda
-    Cambio --> Moneda
-    Calendario --> Tipo
+    Festivo --> TipoFestivo : idTipo
+    Calendario --> Tipo : clasificado por
+    FestivoDto ..> Festivo : se calcula a partir de
+    Calendario ..> FestivoDto : usa para marcar festivos
