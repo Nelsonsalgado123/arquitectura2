@@ -23,3 +23,17 @@ A continuación, se presentan los diagramas de arquitectura de las soluciones de
 La solución en Java implementa una **Arquitectura Hexagonal (Limpia)** separada por módulos:
 
 ![Arquitectura Monedas Spring Boot](diagramas/monedas.png)
+
+---
+
+## 💾 Fase Adicional: Modelado de Datos
+
+Para asegurar una entrega perfecta (como la de tus compañeros), también se incluyeron los diagramas de Base de Datos y de Clases:
+
+### 3. Diagrama Relacional (Base de Datos Monedas)
+
+![Diagrama Relacional](diagramas/diagrama-relacional.png)
+
+### 4. Diagrama Objetual (Clases del Dominio)
+
+![Diagrama de Clases](diagramas/diagrama-objetual.png)

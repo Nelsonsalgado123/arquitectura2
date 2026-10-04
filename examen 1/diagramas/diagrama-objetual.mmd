@@ -1,0 +1,51 @@
+classDiagram
+    class Tipo {
+        -int id
+        -String tipo
+        +getId() int
+        +getTipo() String
+    }
+    
+    class Calendario {
+        -int id
+        -Date fecha
+        -int idTipo
+        -String descripcion
+        +getId() int
+        +getFecha() Date
+    }
+    
+    class Moneda {
+        -int id
+        -String nombre
+        -String sigla
+        -String simbolo
+        -String emisor
+    }
+    
+    class Pais {
+        -int id
+        -String nombre
+        -String codigoAlfa2
+        -String codigoAlfa3
+        -Moneda moneda
+    }
+    
+    class Cambio {
+        -int id
+        -Moneda moneda
+        -Date fecha
+        -double valor
+    }
+
+    class Usuario {
+        -int id
+        -String usuario
+        -String nombre
+        -String clave
+        -String roles
+    }
+
+    Pais --> Moneda
+    Cambio --> Moneda
+    Calendario --> Tipo
