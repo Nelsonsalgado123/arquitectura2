@@ -14,8 +14,8 @@ class SwaggerConfig {
                 },
                 servers: [
                     {
-                        url: `http://localhost:${this.puerto}`,
-                        description: 'Servidor Local de Pruebas'
+                        url: '/',
+                        description: 'Servidor actual (Docker o Local)'
                     },
                 ],
             },

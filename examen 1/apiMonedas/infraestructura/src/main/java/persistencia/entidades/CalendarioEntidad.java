@@ -43,6 +43,13 @@ public class CalendarioEntidad {
         this.descripcion = descripcion;
     }
 
+    public CalendarioEntidad(int id, Date fecha, TipoEntidad tipo, String descripcion) {
+        this.id = id;
+        this.fecha = fecha;
+        this.tipo = tipo;
+        this.descripcion = descripcion;
+    }
+
     public int getId() {
         return id;
     }

@@ -17,7 +17,7 @@ app.use(express.static('public')); // Servir la UI
 app.use('/api/festivos', festivoRoutes);
 
 // Iniciar Servidor
-const PORT = 3030; // Usando el puerto común o ajustarlo a 8080 si lo prefieren
+const PORT = process.env.PORT || 3030;
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en el puerto ${PORT}`);
 });

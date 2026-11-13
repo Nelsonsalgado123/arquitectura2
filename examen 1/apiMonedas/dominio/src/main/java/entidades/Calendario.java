@@ -5,16 +5,16 @@ import java.util.Date;
 public class Calendario {
     private int id;
     private Date fecha;
-    private int idTipo;
+    private Tipo tipo;
     private String descripcion;
 
     public Calendario() {
     }
 
-    public Calendario(int id, Date fecha, int idTipo, String descripcion) {
+    public Calendario(int id, Date fecha, Tipo tipo, String descripcion) {
         this.id = id;
         this.fecha = fecha;
-        this.idTipo = idTipo;
+        this.tipo = tipo;
         this.descripcion = descripcion;
     }
 
@@ -34,12 +34,12 @@ public class Calendario {
         this.fecha = fecha;
     }
 
-    public int getIdTipo() {
-        return idTipo;
+    public Tipo getTipo() {
+        return tipo;
     }
 
-    public void setIdTipo(int idTipo) {
-        this.idTipo = idTipo;
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
     }
 
     public String getDescripcion() {

@@ -42,7 +42,6 @@ public class ConfiguracionSeguridad {
                                         "/swagger-resources/**",
                                         "/webjars/**")
                                 .permitAll()
-                                .requestMatchers("/api/calendario/**").permitAll()
                                 // .requestMatchers("/api/monedas/**").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterAfter(filtro, UsernamePasswordAuthenticationFilter.class)

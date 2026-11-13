@@ -1,0 +1,78 @@
+services:
+  dockerbddivisionpolitica:
+    build:
+      context: ./bd-mongo
+    container_name: dockerbddivisionpolitica
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - reddivisionpolitica
+
+  dockerapidivisionpolitica:
+    build:
+      context: "../examen 3/apiDivisionPolitica"
+    container_name: dockerapidivisionpolitica
+    ports:
+      - "3000:3030"
+    environment:
+      PORT: 3030
+      DB_HOST: dockerbddivisionpolitica
+      DB_PORT: 27017
+      DB_NAME: divisionpolitica
+    depends_on:
+      dockerbddivisionpolitica:
+        condition: service_healthy
+    networks:
+      - reddivisionpolitica
+
+  dockerbdmonedas:
+    build:
+      context: ./bd-postgres
+    container_name: dockerbdmonedas
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_PASSWORD: sa
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d monedas"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    networks:
+      - reddivisionpolitica
+
+  dockerapimonedas:
+    build:
+      context: "../examen 1/apiMonedas"
+    container_name: dockerapimonedas
+    restart: on-failure
+    ports:
+      - "3001:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    depends_on:
+      dockerbdmonedas:
+        condition: service_healthy
+      dockerapidivisionpolitica:
+        condition: service_started
+    networks:
+      - reddivisionpolitica
+
+networks:
+  reddivisionpolitica:
+    name: reddivisionpolitica
+    driver: bridge
+
+volumes:
+  mongo_data:
+  postgres_data:

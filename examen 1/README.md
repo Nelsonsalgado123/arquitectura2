@@ -54,4 +54,38 @@ Código fuente: [`diagramas/calendario.mmd`](diagramas/calendario.mmd)
 - Se rehízo el diagrama de la API Festivos siguiendo el ejemplo de División Política (capa de cliente, flujo numerado de petición/respuesta, archivos y rutas reales, reglas de cálculo de Pascua y Ley de Puente).
 - Se agregó el diagrama de la **API Calendario**, que no se había entregado (antes se había diagramado la API Monedas, que era solo el ejemplo del enunciado).
 - Los diagramas relacional y objetual ahora corresponden a las APIs del taller (Festivos y Calendario) y no a Monedas.
-- La versión en Arquitectura Cebolla (Onion) de la API Calendario se encuentra en la carpeta `examen2`.
+- La versión en Arquitectura Cebolla (Onion) de la API Calendario se encuentra también integrada en los 5 módulos de `apiMonedas` (`dominio`, `core`, `infraestructura`, `aplicacion`, `presentacion`), además del borrador en `examen2`.
+
+---
+
+## 🐳 Despliegue con Docker Compose (Arquitectura Onion + Seguridad JWT)
+
+El archivo [`docker-compose.yml`](docker-compose.yml) levanta e interconecta los 4 contenedores en la red `redcalendario` (sin requerir compilación previa en el equipo anfitrión gracias al `Dockerfile` multi-stage con Maven + Java 21):
+
+| Contenedor | Servicio | Puerto |
+|------------|----------|--------|
+| `dockerbdfestivos` | MongoDB (base `festivos_db` precargada) | `27019:27017` |
+| `dockerapifestivos` | API Festivos (ExpressJS + MongoDB) | `3030:3030` |
+| `dockerbdcalendario` | PostgreSQL (base `calendario` + tablas `tipo`, `calendario`, `usuario`) | `5435:5432` |
+| `dockerapicalendario` | API Calendario + Tipos (Spring Boot 3 / Java 21 — Onion 5 módulos + JWT) | `8080:8080` |
+
+### 1. Levantar todo el sistema
+```bash
+cd "examen 1"
+docker compose up -d --build
+```
+
+### 2. Autenticación JWT y endpoints protegidos
+Todos los endpoints de `/api/calendario/**` y `/api/tipos/**` están protegidos con Bearer JWT (devuelven `403 Forbidden` si no se envía token):
+
+1. **Obtener token JWT** (`GET http://localhost:8080/api/usuarios/validar/admin/admin123`)
+2. **Swagger UI:** `http://localhost:8080/swagger-ui/index.html` (botón **Authorize** con el token recibido)
+3. **Endpoints de Calendario y Tipos (con header `Authorization: Bearer <token>`):**
+   - `GET /api/tipos/`, `GET /api/tipos/obtener/{id}`, `GET /api/tipos/buscar/{nombre}`, `POST /api/tipos/`, `PUT /api/tipos/`, `DELETE /api/tipos/{id}`
+   - `GET /api/calendario/generar/{año}`
+   - `GET /api/calendario/listar/{año}`
+
+### 3. Pruebas automatizadas de integración (PowerShell)
+```powershell
+powershell -ExecutionPolicy Bypass -File "examen 1\test-integracion-calendario.ps1"
+```

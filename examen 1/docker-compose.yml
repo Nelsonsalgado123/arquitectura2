@@ -1,0 +1,78 @@
+services:
+  dockerbdfestivos:
+    build:
+      context: ./BD/bd-mongo-festivos
+    container_name: dockerbdfestivos
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo_festivos_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redcalendario
+
+  dockerapifestivos:
+    build:
+      context: ./apiFestivos
+    container_name: dockerapifestivos
+    ports:
+      - "3030:3030"
+    environment:
+      PORT: 3030
+      DB_HOST: dockerbdfestivos
+      DB_PORT: 27017
+      DB_NAME: festivos_db
+    depends_on:
+      dockerbdfestivos:
+        condition: service_healthy
+    networks:
+      - redcalendario
+
+  dockerbdcalendario:
+    build:
+      context: ./BD/bd-postgres-calendario
+    container_name: dockerbdcalendario
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_PASSWORD: sa
+    volumes:
+      - postgres_calendario_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U postgres -d calendario"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+    networks:
+      - redcalendario
+
+  dockerapicalendario:
+    build:
+      context: ./apiMonedas
+    container_name: dockerapicalendario
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: calendario
+    depends_on:
+      dockerbdcalendario:
+        condition: service_healthy
+      dockerapifestivos:
+        condition: service_started
+    networks:
+      - redcalendario
+
+networks:
+  redcalendario:
+    name: redcalendario
+    driver: bridge
+
+volumes:
+  mongo_festivos_data:
+  postgres_calendario_data:

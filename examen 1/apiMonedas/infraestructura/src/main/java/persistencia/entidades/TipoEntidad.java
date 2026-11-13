@@ -14,7 +14,9 @@ public class TipoEntidad {
 
     @Id
     @Column(name = "id")
-    private int id; // Usaremos id manual según el PDF o podemos usar auto numérico. El PDF pone Tipo: Id, Tipo.
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "secuencia_tipo")
+    @SequenceGenerator(name = "secuencia_tipo", sequenceName = "secuencia_tipo", allocationSize = 1)
+    private int id;
 
     @Column(name = "tipo", length = 100)
     private String tipo;
